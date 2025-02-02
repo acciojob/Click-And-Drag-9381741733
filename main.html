@@ -25,7 +25,7 @@
       height: 440px;
     }
 
-    .cube {
+    .items {
       width: 100px;
       height: 100px;
       background-color: #3498db;
@@ -43,14 +43,13 @@
   <script>
     const grid = document.getElementById('grid');
 
-    // Generate initial cubes in grid formation
     const cubeSize = 100;
     const gap = 10;
 
     for (let row = 0; row < 4; row++) {
       for (let col = 0; col < 4; col++) {
         const cube = document.createElement('div');
-        cube.classList.add('cube');
+        cube.classList.add('items');
         cube.style.left = `${col * (cubeSize + gap)}px`;
         cube.style.top = `${row * (cubeSize + gap)}px`;
         grid.appendChild(cube);
@@ -62,7 +61,7 @@
     let offsetY = 0;
 
     document.addEventListener('mousedown', (event) => {
-      if (event.target.classList.contains('cube')) {
+      if (event.target.classList.contains('items')) {
         selectedCube = event.target;
         const cubeRect = selectedCube.getBoundingClientRect();
         offsetX = event.clientX - cubeRect.left;
