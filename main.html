@@ -20,9 +20,9 @@
       grid-template-rows: repeat(4, 100px);
       gap: 10px;
       background-color: #ddd;
-      position: relative;
       width: 440px;
       height: 440px;
+      position: relative;
     }
 
     .items {
@@ -32,8 +32,8 @@
       border: 2px solid #2980b9;
       border-radius: 8px;
       cursor: grab;
-      user-select: none;
       position: absolute;
+      user-select: none;
     }
   </style>
 </head>
@@ -42,10 +42,10 @@
 
   <script>
     const grid = document.getElementById('grid');
-
     const cubeSize = 100;
     const gap = 10;
 
+    // Create and position the cubes
     for (let row = 0; row < 4; row++) {
       for (let col = 0; col < 4; col++) {
         const cube = document.createElement('div');
@@ -75,11 +75,11 @@
         let x = event.clientX - grid.offsetLeft - offsetX;
         let y = event.clientY - grid.offsetTop - offsetY;
 
-        // Constrain movement within the grid bounds
+        // Ensure the cube remains within grid bounds
         x = Math.max(0, Math.min(x, grid.offsetWidth - cubeSize));
         y = Math.max(0, Math.min(y, grid.offsetHeight - cubeSize));
 
-        // Snap to grid
+        // Snap to grid logic
         x = Math.round(x / (cubeSize + gap)) * (cubeSize + gap);
         y = Math.round(y / (cubeSize + gap)) * (cubeSize + gap);
 
