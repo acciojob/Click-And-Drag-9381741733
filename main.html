@@ -13,16 +13,18 @@
       min-height: 100vh;
       background-color: #f0f0f0;
     }
+
     #grid {
       display: grid;
       grid-template-columns: repeat(4, 100px);
       grid-template-rows: repeat(4, 100px);
       gap: 10px;
+      background-color: #ddd;
       position: relative;
       width: 440px;
       height: 440px;
-      background-color: #ddd;
     }
+
     .cube {
       width: 100px;
       height: 100px;
@@ -42,12 +44,15 @@
     const grid = document.getElementById('grid');
 
     // Generate initial cubes in grid formation
-    for (let i = 0; i < 4; i++) {
-      for (let j = 0; j < 4; j++) {
+    const cubeSize = 100;
+    const gap = 10;
+
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 4; col++) {
         const cube = document.createElement('div');
         cube.classList.add('cube');
-        cube.style.left = `${j * 110}px`;
-        cube.style.top = `${i * 110}px`;
+        cube.style.left = `${col * (cubeSize + gap)}px`;
+        cube.style.top = `${row * (cubeSize + gap)}px`;
         grid.appendChild(cube);
       }
     }
@@ -59,8 +64,9 @@
     document.addEventListener('mousedown', (event) => {
       if (event.target.classList.contains('cube')) {
         selectedCube = event.target;
-        offsetX = event.offsetX;
-        offsetY = event.offsetY;
+        const cubeRect = selectedCube.getBoundingClientRect();
+        offsetX = event.clientX - cubeRect.left;
+        offsetY = event.clientY - cubeRect.top;
         selectedCube.style.cursor = 'grabbing';
       }
     });
@@ -71,8 +77,12 @@
         let y = event.clientY - grid.offsetTop - offsetY;
 
         // Constrain movement within the grid bounds
-        x = Math.max(0, Math.min(x, grid.offsetWidth - selectedCube.offsetWidth));
-        y = Math.max(0, Math.min(y, grid.offsetHeight - selectedCube.offsetHeight));
+        x = Math.max(0, Math.min(x, grid.offsetWidth - cubeSize));
+        y = Math.max(0, Math.min(y, grid.offsetHeight - cubeSize));
+
+        // Snap to grid
+        x = Math.round(x / (cubeSize + gap)) * (cubeSize + gap);
+        y = Math.round(y / (cubeSize + gap)) * (cubeSize + gap);
 
         selectedCube.style.left = `${x}px`;
         selectedCube.style.top = `${y}px`;
