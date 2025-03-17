@@ -25,7 +25,7 @@
       position: relative;
     }
 
-    .items {
+    .cube {
       width: 100px;
       height: 100px;
       background-color: #3498db;
@@ -34,66 +34,83 @@
       cursor: grab;
       position: absolute;
       user-select: none;
+      transition: top 0.2s ease-out, left 0.2s ease-out; /* Smooth snapping */
     }
   </style>
 </head>
 <body>
+
   <div id="grid"></div>
 
   <script>
-    const grid = document.getElementById('grid');
+    const grid = document.getElementById("grid");
     const cubeSize = 100;
     const gap = 10;
-
-    // Create and position the cubes
-    for (let row = 0; row < 4; row++) {
-      for (let col = 0; col < 4; col++) {
-        const cube = document.createElement('div');
-        cube.classList.add('items');
-        cube.style.left = `${col * (cubeSize + gap)}px`;
-        cube.style.top = `${row * (cubeSize + gap)}px`;
-        grid.appendChild(cube);
-      }
-    }
-
+    const gridCols = 4;
+    const gridRows = 4;
     let selectedCube = null;
     let offsetX = 0;
     let offsetY = 0;
 
-    document.addEventListener('mousedown', (event) => {
-      if (event.target.classList.contains('items')) {
-        selectedCube = event.target;
-        const cubeRect = selectedCube.getBoundingClientRect();
-        offsetX = event.clientX - cubeRect.left;
-        offsetY = event.clientY - cubeRect.top;
-        selectedCube.style.cursor = 'grabbing';
+    // Create cubes
+    for (let row = 0; row < gridRows; row++) {
+      for (let col = 0; col < gridCols; col++) {
+        const cube = document.createElement("div");
+        cube.classList.add("cube");
+        cube.style.left = `${col * (cubeSize + gap)}px`;
+        cube.style.top = `${row * (cubeSize + gap)}px`;
+        grid.appendChild(cube);
+
+        // Attach event listeners
+        cube.addEventListener("mousedown", (event) => startDrag(event, cube));
       }
-    });
+    }
 
-    document.addEventListener('mousemove', (event) => {
-      if (selectedCube) {
-        let x = event.clientX - grid.offsetLeft - offsetX;
-        let y = event.clientY - grid.offsetTop - offsetY;
+    function startDrag(event, cube) {
+      selectedCube = cube;
+      const rect = cube.getBoundingClientRect();
+      offsetX = event.clientX - rect.left;
+      offsetY = event.clientY - rect.top;
+      cube.style.cursor = "grabbing";
 
-        // Ensure the cube remains within grid bounds
-        x = Math.max(0, Math.min(x, grid.offsetWidth - cubeSize));
-        y = Math.max(0, Math.min(y, grid.offsetHeight - cubeSize));
+      document.addEventListener("mousemove", drag);
+      document.addEventListener("mouseup", drop);
+    }
 
-        // Snap to grid logic
-        x = Math.round(x / (cubeSize + gap)) * (cubeSize + gap);
-        y = Math.round(y / (cubeSize + gap)) * (cubeSize + gap);
+    function drag(event) {
+      if (!selectedCube) return;
 
-        selectedCube.style.left = `${x}px`;
-        selectedCube.style.top = `${y}px`;
-      }
-    });
+      let x = event.clientX - grid.offsetLeft - offsetX;
+      let y = event.clientY - grid.offsetTop - offsetY;
 
-    document.addEventListener('mouseup', () => {
-      if (selectedCube) {
-        selectedCube.style.cursor = 'grab';
-        selectedCube = null;
-      }
-    });
+      // Ensure within boundaries
+      x = Math.max(0, Math.min(x, grid.offsetWidth - cubeSize));
+      y = Math.max(0, Math.min(y, grid.offsetHeight - cubeSize));
+
+      selectedCube.style.left = `${x}px`;
+      selectedCube.style.top = `${y}px`;
+    }
+
+    function drop() {
+      if (!selectedCube) return;
+
+      let x = parseInt(selectedCube.style.left);
+      let y = parseInt(selectedCube.style.top);
+
+      // Snap to grid
+      x = Math.round(x / (cubeSize + gap)) * (cubeSize + gap);
+      y = Math.round(y / (cubeSize + gap)) * (cubeSize + gap);
+
+      selectedCube.style.left = `${x}px`;
+      selectedCube.style.top = `${y}px`;
+
+      selectedCube.style.cursor = "grab";
+      selectedCube = null;
+
+      document.removeEventListener("mousemove", drag);
+      document.removeEventListener("mouseup", drop);
+    }
   </script>
+
 </body>
 </html>
