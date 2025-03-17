@@ -52,14 +52,28 @@
     let offsetX = 0;
     let offsetY = 0;
 
+    // Store occupied positions
+    let occupiedPositions = new Set();
+
+    function getGridPosition(left, top) {
+      let col = Math.round(left / (cubeSize + gap));
+      let row = Math.round(top / (cubeSize + gap));
+      return `${row}-${col}`;
+    }
+
     // Create cubes
     for (let row = 0; row < gridRows; row++) {
       for (let col = 0; col < gridCols; col++) {
         const cube = document.createElement("div");
         cube.classList.add("cube");
-        cube.style.left = `${col * (cubeSize + gap)}px`;
-        cube.style.top = `${row * (cubeSize + gap)}px`;
+        let left = col * (cubeSize + gap);
+        let top = row * (cubeSize + gap);
+        cube.style.left = `${left}px`;
+        cube.style.top = `${top}px`;
         grid.appendChild(cube);
+
+        let positionKey = getGridPosition(left, top);
+        occupiedPositions.add(positionKey);
 
         // Attach event listeners
         cube.addEventListener("mousedown", (event) => startDrag(event, cube));
@@ -72,6 +86,10 @@
       offsetX = event.clientX - rect.left;
       offsetY = event.clientY - rect.top;
       cube.style.cursor = "grabbing";
+
+      // Remove previous position from occupied set
+      let prevPositionKey = getGridPosition(parseInt(cube.style.left), parseInt(cube.style.top));
+      occupiedPositions.delete(prevPositionKey);
 
       document.addEventListener("mousemove", drag);
       document.addEventListener("mouseup", drop);
@@ -98,11 +116,28 @@
       let y = parseInt(selectedCube.style.top);
 
       // Snap to grid
-      x = Math.round(x / (cubeSize + gap)) * (cubeSize + gap);
-      y = Math.round(y / (cubeSize + gap)) * (cubeSize + gap);
+      let newCol = Math.round(x / (cubeSize + gap));
+      let newRow = Math.round(y / (cubeSize + gap));
 
-      selectedCube.style.left = `${x}px`;
-      selectedCube.style.top = `${y}px`;
+      let newX = newCol * (cubeSize + gap);
+      let newY = newRow * (cubeSize + gap);
+
+      let newPositionKey = getGridPosition(newX, newY);
+
+      // If position is already occupied, reset to previous position
+      if (occupiedPositions.has(newPositionKey)) {
+        let prevPositionKey = getGridPosition(parseInt(selectedCube.style.left), parseInt(selectedCube.style.top));
+        let prevCoords = prevPositionKey.split("-").map(Number);
+        newX = prevCoords[1] * (cubeSize + gap);
+        newY = prevCoords[0] * (cubeSize + gap);
+      }
+
+      // Update cube position
+      selectedCube.style.left = `${newX}px`;
+      selectedCube.style.top = `${newY}px`;
+
+      // Mark new position as occupied
+      occupiedPositions.add(newPositionKey);
 
       selectedCube.style.cursor = "grab";
       selectedCube = null;
