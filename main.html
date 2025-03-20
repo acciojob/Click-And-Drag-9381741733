@@ -2,150 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cube Drag and Drop</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background-color: #f0f0f0;
-    }
-
-    #grid {
-      display: grid;
-      grid-template-columns: repeat(4, 100px);
-      grid-template-rows: repeat(4, 100px);
-      gap: 10px;
-      background-color: #ddd;
-      width: 440px;
-      height: 440px;
-      position: relative;
-    }
-
-    .cube {
-      width: 100px;
-      height: 100px;
-      background-color: #3498db;
-      border: 2px solid #2980b9;
-      border-radius: 8px;
-      cursor: grab;
-      position: absolute;
-      user-select: none;
-      transition: top 0.2s ease-out, left 0.2s ease-out; /* Smooth snapping */
-    }
-  </style>
+  <title>Click and Drag</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="items">
+    <div class="item item1">01</div>
+    <div class="item item2">02</div>
+    <div class="item item3">03</div>
+    <div class="item item4">04</div>
+    <div class="item item5">05</div>
+    <div class="item item6">06</div>
+    <div class="item item7">07</div>
+    <div class="item item8">08</div>
+    <div class="item item9">09</div>
+    <div class="item item10">10</div>
+    <div class="item item11">11</div>
+    <div class="item item12">12</div>
+    <div class="item item13">13</div>
+    <div class="item item14">14</div>
+    <div class="item item15">15</div>
+    <div class="item item16">16</div>
+    <div class="item item17">17</div>
+    <div class="item item18">18</div>
+    <div class="item item19">19</div>
+    <div class="item item20">20</div>
+    <div class="item item21">21</div>
+    <div class="item item22">22</div>
+    <div class="item item23">23</div>
+    <div class="item item24">24</div>
+    <div class="item item25">25</div>
+  </div>
 
-  <div id="grid"></div>
+<script>
+//Your code goes here 
+</script>
 
-  <script>
-    const grid = document.getElementById("grid");
-    const cubeSize = 100;
-    const gap = 10;
-    const gridCols = 4;
-    const gridRows = 4;
-    let selectedCube = null;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    // Store occupied positions
-    let occupiedPositions = new Set();
-
-    function getGridPosition(left, top) {
-      let col = Math.round(left / (cubeSize + gap));
-      let row = Math.round(top / (cubeSize + gap));
-      return `${row}-${col}`;
-    }
-
-    // Create cubes
-    for (let row = 0; row < gridRows; row++) {
-      for (let col = 0; col < gridCols; col++) {
-        const cube = document.createElement("div");
-        cube.classList.add("cube");
-        let left = col * (cubeSize + gap);
-        let top = row * (cubeSize + gap);
-        cube.style.left = `${left}px`;
-        cube.style.top = `${top}px`;
-        grid.appendChild(cube);
-
-        let positionKey = getGridPosition(left, top);
-        occupiedPositions.add(positionKey);
-
-        // Attach event listeners
-        cube.addEventListener("mousedown", (event) => startDrag(event, cube));
-      }
-    }
-
-    function startDrag(event, cube) {
-      selectedCube = cube;
-      const rect = cube.getBoundingClientRect();
-      offsetX = event.clientX - rect.left;
-      offsetY = event.clientY - rect.top;
-      cube.style.cursor = "grabbing";
-
-      // Remove previous position from occupied set
-      let prevPositionKey = getGridPosition(parseInt(cube.style.left), parseInt(cube.style.top));
-      occupiedPositions.delete(prevPositionKey);
-
-      document.addEventListener("mousemove", drag);
-      document.addEventListener("mouseup", drop);
-    }
-
-    function drag(event) {
-      if (!selectedCube) return;
-
-      let x = event.clientX - grid.offsetLeft - offsetX;
-      let y = event.clientY - grid.offsetTop - offsetY;
-
-      // Ensure within boundaries
-      x = Math.max(0, Math.min(x, grid.offsetWidth - cubeSize));
-      y = Math.max(0, Math.min(y, grid.offsetHeight - cubeSize));
-
-      selectedCube.style.left = `${x}px`;
-      selectedCube.style.top = `${y}px`;
-    }
-
-    function drop() {
-      if (!selectedCube) return;
-
-      let x = parseInt(selectedCube.style.left);
-      let y = parseInt(selectedCube.style.top);
-
-      // Snap to grid
-      let newCol = Math.round(x / (cubeSize + gap));
-      let newRow = Math.round(y / (cubeSize + gap));
-
-      let newX = newCol * (cubeSize + gap);
-      let newY = newRow * (cubeSize + gap);
-
-      let newPositionKey = getGridPosition(newX, newY);
-
-      // If position is already occupied, reset to previous position
-      if (occupiedPositions.has(newPositionKey)) {
-        let prevPositionKey = getGridPosition(parseInt(selectedCube.style.left), parseInt(selectedCube.style.top));
-        let prevCoords = prevPositionKey.split("-").map(Number);
-        newX = prevCoords[1] * (cubeSize + gap);
-        newY = prevCoords[0] * (cubeSize + gap);
-      }
-
-      // Update cube position
-      selectedCube.style.left = `${newX}px`;
-      selectedCube.style.top = `${newY}px`;
-
-      // Mark new position as occupied
-      occupiedPositions.add(newPositionKey);
-
-      selectedCube.style.cursor = "grab";
-      selectedCube = null;
-
-      document.removeEventListener("mousemove", drag);
-      document.removeEventListener("mouseup", drop);
-    }
-  </script>
-
-</body>
+  </body>
 </html>
