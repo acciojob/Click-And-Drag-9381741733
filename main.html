@@ -1,5 +1,4 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -27,11 +26,10 @@
     }
 
     .items {
-      width: 800px;
-      height: 500px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(5, 1fr);
+      width: 600px;
+      height: 400px;
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
       padding: 20px;
       border: 2px solid white;
@@ -40,8 +38,8 @@
     }
 
     .item {
-      width: 120px;
-      height: 120px;
+      width: 100px;
+      height: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -51,10 +49,8 @@
       cursor: grab;
       user-select: none;
       position: absolute; /* Enables dragging */
+      background: dodgerblue;
     }
-
-    .item:nth-child(odd) { background: dodgerblue; }
-    .item:nth-child(even) { background: tomato; }
 
   </style>
 </head>
@@ -62,11 +58,11 @@
 
   <div class="items">
     <!-- Dynamically positioned items -->
-    <div class="item" style="left: 0px; top: 0px;">01</div>
-    <div class="item" style="left: 130px; top: 0px;">02</div>
-    <div class="item" style="left: 260px; top: 0px;">03</div>
-    <div class="item" style="left: 390px; top: 0px;">04</div>
-    <div class="item" style="left: 520px; top: 0px;">05</div>
+    <div class="item" style="left: 10px; top: 10px;">01</div>
+    <div class="item" style="left: 120px; top: 10px;">02</div>
+    <div class="item" style="left: 230px; top: 10px;">03</div>
+    <div class="item" style="left: 340px; top: 10px;">04</div>
+    <div class="item" style="left: 450px; top: 10px;">05</div>
   </div>
 
 <script>
@@ -81,6 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
             offsetX = e.clientX - selectedItem.offsetLeft;
             offsetY = e.clientY - selectedItem.offsetTop;
             selectedItem.style.cursor = "grabbing";
+            selectedItem.style.zIndex = "1000"; // Ensures topmost item when dragging
         });
     });
 
@@ -90,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let newX = e.clientX - offsetX;
         let newY = e.clientY - offsetY;
         
-        // Container boundaries
+        // Boundary conditions
         const containerRect = container.getBoundingClientRect();
         const itemRect = selectedItem.getBoundingClientRect();
 
@@ -106,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("mouseup", function () {
         if (selectedItem) {
             selectedItem.style.cursor = "grab";
+            selectedItem.style.zIndex = "1"; // Reset z-index after dragging
             selectedItem = null;
         }
     });
