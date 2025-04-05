@@ -1,116 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Drag & Drop To-Do App</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
 
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(to right, #74ebd5, #acb6e5);
-      font-family: sans-serif;
-    }
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-    .items {
-      width: 600px;
-      height: 400px;
-      position: relative;
-      background: rgba(255, 255, 255, 0.1);
-      border: 3px solid #fff;
-      border-radius: 10px;
-      display: grid;
-      grid-template-columns: repeat(5, 100px);
-      grid-template-rows: repeat(2, 100px);
-      gap: 10px;
-      padding: 10px;
-    }
+  <body>
+    <!-- do not change this code -->
+    <h1>Quiz</h1>
+    <div id="questions"></div>
+    <button id="submit">Submit</button>
+    <div id="score"></div>
 
-    .item {
-      background-color: #007bff;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      font-weight: bold;
-      cursor: grab;
-      user-select: none;
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      border-radius: 8px;
-      transition: box-shadow 0.2s;
-    }
-
-    .item:active {
-      cursor: grabbing;
-      box-shadow: 0 0 10px #000;
-    }
-  </style>
-</head>
-<body>
-
-<div class="items" id="items"></div>
-
-<script>
-  const container = document.getElementById('items');
-  const cubeSize = 100;
-  const gap = 10;
-  const cols = 5;
-  const rows = 2;
-
-  for (let i = 0; i < cols * rows; i++) {
-    const item = document.createElement('div');
-    item.classList.add('item');
-    item.textContent = String(i + 1).padStart(2, '0');
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    item.style.left = (col * (cubeSize + gap)) + "px";
-    item.style.top = (row * (cubeSize + gap)) + "px";
-    container.appendChild(item);
-  }
-
-  let selected = null;
-  let offsetX = 0, offsetY = 0;
-
-  container.addEventListener('mousedown', function(e) {
-    if (e.target.classList.contains('item')) {
-      selected = e.target;
-      const rect = selected.getBoundingClientRect();
-      offsetX = e.clientX - rect.left;
-      offsetY = e.clientY - rect.top;
-      selected.style.zIndex = 1000;
-    }
-  });
-
-  document.addEventListener('mousemove', function(e) {
-    if (!selected) return;
-
-    const containerRect = container.getBoundingClientRect();
-    let newX = e.clientX - containerRect.left - offsetX;
-    let newY = e.clientY - containerRect.top - offsetY;
-
-    newX = Math.max(0, Math.min(newX, container.clientWidth - cubeSize));
-    newY = Math.max(0, Math.min(newY, container.clientHeight - cubeSize));
-
-    selected.style.left = newX + "px";
-    selected.style.top = newY + "px";
-  });
-
-  document.addEventListener('mouseup', function() {
-    if (selected) {
-      selected.style.zIndex = 1;
-      selected = null;
-    }
-  });
-</script>
-
-</body>
+    <script type="text/javascript" src="./script.js"></script>
+  </body>
 </html>
