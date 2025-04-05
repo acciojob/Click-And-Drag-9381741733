@@ -2,112 +2,117 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Click and Drag</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Click and Drag Cubes</title>
   <style>
-    html {
+    * {
       box-sizing: border-box;
-      background: url('https://source.unsplash.com/NFs6dRTBgaM/2000x2000') fixed;
-      background-size: cover;
-    }
-
-    *, *:before, *:after {
-      box-sizing: inherit;
     }
 
     body {
-      min-height: 100vh;
+      margin: 0;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
       font-family: sans-serif;
-      font-size: 20px;
-      margin: 0;
     }
 
-    .items {
+    .container {
       width: 600px;
       height: 400px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      padding: 20px;
-      border: 2px solid white;
-      background: rgba(255,255,255,0.1);
       position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      border: 3px solid #fff;
+      border-radius: 10px;
+      display: grid;
+      grid-template-columns: repeat(5, 100px);
+      grid-template-rows: repeat(2, 100px);
+      gap: 10px;
+      padding: 10px;
     }
 
-    .item {
-      width: 100px;
-      height: 100px;
+    .cube {
+      background-color: #007bff;
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px;
+      font-size: 24px;
       font-weight: bold;
-      color: white;
       cursor: grab;
       user-select: none;
-      position: absolute; /* Enables dragging */
-      background: dodgerblue;
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      transition: box-shadow 0.2s;
     }
 
+    .cube:active {
+      cursor: grabbing;
+      box-shadow: 0 0 10px #000;
+    }
   </style>
 </head>
 <body>
 
-  <div class="items">
-    <!-- Dynamically positioned items -->
-    <div class="item" style="left: 10px; top: 10px;">01</div>
-    <div class="item" style="left: 120px; top: 10px;">02</div>
-    <div class="item" style="left: 230px; top: 10px;">03</div>
-    <div class="item" style="left: 340px; top: 10px;">04</div>
-    <div class="item" style="left: 450px; top: 10px;">05</div>
-  </div>
+<div class="container" id="container"></div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const container = document.querySelector(".items");
-    let selectedItem = null;
-    let offsetX = 0, offsetY = 0;
+  const container = document.getElementById('container');
+  const cubeSize = 100;
+  const gap = 10;
+  const cols = 5;
+  const rows = 2;
 
-    document.querySelectorAll(".item").forEach(item => {
-        item.addEventListener("mousedown", function (e) {
-            selectedItem = this;
-            offsetX = e.clientX - selectedItem.offsetLeft;
-            offsetY = e.clientY - selectedItem.offsetTop;
-            selectedItem.style.cursor = "grabbing";
-            selectedItem.style.zIndex = "1000"; // Ensures topmost item when dragging
-        });
-    });
+  // Create cubes and position them initially in a grid
+  for (let i = 0; i < cols * rows; i++) {
+    const cube = document.createElement('div');
+    cube.classList.add('cube');
+    cube.textContent = String(i + 1).padStart(2, '0');
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    cube.style.left = (col * (cubeSize + gap)) + "px";
+    cube.style.top = (row * (cubeSize + gap)) + "px";
+    container.appendChild(cube);
+  }
 
-    document.addEventListener("mousemove", function (e) {
-        if (!selectedItem) return;
-        
-        let newX = e.clientX - offsetX;
-        let newY = e.clientY - offsetY;
-        
-        // Boundary conditions
-        const containerRect = container.getBoundingClientRect();
-        const itemRect = selectedItem.getBoundingClientRect();
+  let selected = null;
+  let offsetX = 0, offsetY = 0;
 
-        if (newX < 0) newX = 0;
-        if (newY < 0) newY = 0;
-        if (newX + itemRect.width > containerRect.width) newX = containerRect.width - itemRect.width;
-        if (newY + itemRect.height > containerRect.height) newY = containerRect.height - itemRect.height;
+  container.addEventListener('mousedown', function(e) {
+    if (e.target.classList.contains('cube')) {
+      selected = e.target;
+      const rect = selected.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      selected.style.zIndex = 1000;
+    }
+  });
 
-        selectedItem.style.left = newX + "px";
-        selectedItem.style.top = newY + "px";
-    });
+  document.addEventListener('mousemove', function(e) {
+    if (!selected) return;
 
-    document.addEventListener("mouseup", function () {
-        if (selectedItem) {
-            selectedItem.style.cursor = "grab";
-            selectedItem.style.zIndex = "1"; // Reset z-index after dragging
-            selectedItem = null;
-        }
-    });
-});
+    const containerRect = container.getBoundingClientRect();
+
+    let newX = e.clientX - containerRect.left - offsetX;
+    let newY = e.clientY - containerRect.top - offsetY;
+
+    // Constrain within container
+    newX = Math.max(0, Math.min(newX, container.clientWidth - cubeSize));
+    newY = Math.max(0, Math.min(newY, container.clientHeight - cubeSize));
+
+    selected.style.left = newX + "px";
+    selected.style.top = newY + "px";
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (selected) {
+      selected.style.zIndex = 1;
+      selected = null;
+    }
+  });
 </script>
 
 </body>
